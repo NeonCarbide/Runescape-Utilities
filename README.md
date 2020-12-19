@@ -1,4 +1,4 @@
-# A set of utilities to use with Runescape
+# Runescape Utilities
 
 ## Currently contains
 
