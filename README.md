@@ -2,4 +2,5 @@
 
 ## Currently contains
 
-    - Tasklist Manager
+- Tasklist Manager
+  - Create and manage tasklists
