@@ -1,5 +1,7 @@
+from test import listbox
+from tkinter.font import Font
 from tkinter.messagebox import showwarning as warn
-from util import *
+from .util import *
 
 import pickle as p
 import tkinter as tk
@@ -8,6 +10,7 @@ import os
 
 folder = os.path.join(os.path.dirname(os.path.realpath('__file__')), 'lists')
 root_width = 50
+listbox_tasks = None
 
 if not os.path.exists(folder):
     os.makedirs(folder)
@@ -18,12 +21,15 @@ class Main:
         self.root.title('Tasklists')
         self.root.resizable(0, 0)
 
+        self.font_normal = Font(root, family='Segoe UI', size=9, overstrike=False)
+        self.font_strikeout = Font(root, family='Segoe UI', size=9, overstrike=True)
+
         self.menu = tk.Menu(self.root)
         self.root.config(menu=self.menu)
 
         self.menu_file = tk.Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label='File', menu=self.menu_file)
-        self.menu_file.add_command(label='New Tasklist', command=lambda: clear_listbox(self.listbox_tasks))
+        self.menu_file.add_command(label='New Tasklist', command=lambda: clear_listbox(listbox_tasks))
         self.menu_file.add_command(label='Load Tasklist', command=lambda: new_window(self.root, Load))
         self.menu_file.add_command(label='Save Tasklist', command=lambda: new_window(self.root, Save))
 
@@ -32,10 +38,10 @@ class Main:
         self.btn_add_task = new_grid_button(self.frame_add, 'Add Task', self.add_task, 12, 0, 1)
 
         self.frame_tasks = new_frame(self.root)
-        self.listbox_tasks = new_listbox(self.frame_tasks, root_width, 12, tk.LEFT)
+        listbox_tasks = new_listbox(self.frame_tasks, root_width, 12, tk.LEFT)
         self.scrollbar_tasks = new_scollbar(self.frame_tasks, tk.RIGHT)
-        self.listbox_tasks.config(yscrollcommand=self.scrollbar_tasks.set)
-        self.scrollbar_tasks.config(command=self.listbox_tasks.yview)
+        listbox_tasks.config(yscrollcommand=self.scrollbar_tasks.set)
+        self.scrollbar_tasks.config(command=listbox_tasks.yview)
 
         self.frame_control = new_frame(self.root)
         self.btn_cross_task = new_grid_button(self.frame_control, 'Cross Task', self.cross_task, 12, 0, 0)
@@ -43,26 +49,38 @@ class Main:
         self.btn_remove_task = new_grid_button(self.frame_control, 'Delete Task', self.remove_task, 12, 0, 1)
 
     def add_task(self):
-        task = self.entry_add_task.get()
+        task = ' \u2610 : {}'.format(self.entry_add_task.get())
 
         if (task != ''):
-            self.listbox_tasks.insert(tk.END, task)
+            listbox_tasks.insert(tk.END, task)
             self.entry_add_task.delete(0, tk.END)
         else:
             warn(title='Error', message='No task found\nPlease enter a task')
     
     def remove_task(self):
         try:
-            task_index = self.listbox_tasks.curselection()[0]
-            self.listbox_tasks.delete(task_index)
+            task_index = listbox_tasks.curselection()[0]
+            listbox_tasks.delete(task_index)
         except:
             warn(title='Error', message='No task selected\nPlease select a task')
 
     def cross_task(self):
-        pass
+        try:
+            task_index = listbox_tasks.curselection()[0]
+            task = ' \u2611 : {}'.format(listbox_tasks.get(task_index).split(': ')[1])
+            listbox_tasks.delete(task_index)
+            listbox_tasks.insert(task_index, task)
+        except:
+            warn(title='Error', message='No task selected\nPlease select a task')
 
     def uncross_task(self):
-        pass
+        try:
+            task_index = listbox_tasks.curselection()[0]
+            task = ' \u2610 : {}'.format(listbox_tasks.get(task_index).split(': ')[1])
+            listbox_tasks.delete(task_index)
+            listbox_tasks.insert(task_index, task)
+        except:
+            warn(title='Error', message='No task selected\nPlease select a task')
 
 class Load:
     def __init__(self, root) -> None:
@@ -90,15 +108,19 @@ class Load:
     def load_tasklist(self):
         try:
             self.tasklist_path = f'{folder}\{self.listbox_tasklists.get(self.listbox_tasklists.curselection()[0])}.dat'
+            print(self.tasklist_path)
             self.tasklist = p.load(open(self.tasklist_path, 'rb'))
-            clear_listbox(Main.listbox_tasks)
+            print(self.tasklist)
+            clear_listbox(listbox_tasks)
 
             for task in self.tasklist:
-                Main.listbox_tasks.insert(tk.END, task)
+                print(task)
+                listbox_tasks.insert(tk.END, task)
             
             close_window(self.root)
         except:
-            warn(title='Error', message='No tasklist selected\nPlease select a tasklist')
+            warn()
+            # warn(title='Error', message='No tasklist selected\nPlease select a tasklist')
 
 class Save:
     def __init__(self, root) -> None:
@@ -113,7 +135,7 @@ class Save:
     def save_tasklist(self):
         try:
             self.tasklist_path = f'{folder}\{self.entry.get()}.dat'
-            self.tasklist = Main.listbox_tasks.get(0, Main.listbox_tasks.size())
+            self.tasklist = listbox_tasks.get(0, listbox_tasks.size())
             p.dump(self.tasklist, open(self.tasklist_path, 'wb'))
             self.entry.delete(0, tk.END)
             close_window(self.root)

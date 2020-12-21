@@ -86,7 +86,7 @@ def new_listbox(container, width=0, height=0, side=0):
             listbox = tk.Listbox(container, height=height)
         else:
             listbox = tk.Listbox(container)
-    
+
     if (not isinstance(side, int)):
         listbox.pack(side=side)
     else:

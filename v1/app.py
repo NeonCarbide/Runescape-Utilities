@@ -1,12 +1,11 @@
-from tkinter.constants import HORIZONTAL
-from util import *
+from .util import *
+from . import tasks
+from . import timers
 
 import tkinter.ttk as ttk
 import tkinter as tk
 
 import psutil
-import tasks
-import timers
 
 def isRunescapeOpen():
     for proc in psutil.process_iter():

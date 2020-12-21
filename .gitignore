@@ -1,5 +1,5 @@
-/lists
-/listsOld
 /reference
-/test.py
 /__pycache__
+/v1/lists
+/v1/listsOld
+/v2/tasks.py
