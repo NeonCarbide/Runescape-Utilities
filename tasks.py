@@ -60,11 +60,11 @@ class Main:
             return 'break'
 
 class Load:
-    def __init__(self) -> None:
+    def __init__(self, container) -> None:
         super().__init__()
 
 class Save:
-    def __init__(self) -> None:
+    def __init__(self, container) -> None:
         super().__init__()
 
 root = tk.Tk()
