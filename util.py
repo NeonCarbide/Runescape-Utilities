@@ -1,4 +1,5 @@
 import tkinter as t
+import tkinter.ttk as tt
 
 def add_widget(widget, options=None):
     wid = widget
@@ -16,6 +17,9 @@ def add_widget(widget, options=None):
             options.pop('grid')
             wid.config(options)
             wid.grid(grid_opts)
+        else:
+            wid.config(options)
+            wid.pack()
     else:
         wid.pack()
     
@@ -50,6 +54,11 @@ def scrollbar(container, options=None):
     scrollbar = t.Scrollbar(container)
 
     return add_widget(scrollbar, options)
+
+def treeview(container, options=None):
+    treeview = tt.Treeview(container)
+
+    return add_widget(treeview, options)
 
 def window(container, _class):
     window = t.Toplevel(container)
